@@ -4,7 +4,7 @@ export class Operand extends React.Component {
 
     render() {
         return (
-            <button type="button" className="btn btn-secondary margin_16 btn-lg">{this.props.value}</button>
+            <button type="button" className="btn btn-light margin_16 btn-lg" onClick={() => this.props.onClick()}>{this.props.value}</button>
         );
     }
 }
