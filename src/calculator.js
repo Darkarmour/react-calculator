@@ -1,9 +1,11 @@
 import React from 'react';
 
+import Operand from './operand';
+
 function Calculator() {
     return (
         <div>
-        <h1>Welcome to calculator design</h1>
+        <Operand />
         </div>)
 }
 export default Calculator;
