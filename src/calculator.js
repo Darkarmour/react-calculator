@@ -40,39 +40,7 @@ class Calculator extends React.Component {
         }
         else if (opa === '=') {
             let currentCalculation = this.state.currentCalculation;
-            let result = 0;
-            let operation = undefined;
-            for (var i = 0; i < currentCalculation.length; i++) {
-                let character = currentCalculation[i];
-                console.log(character, operation, result);
-                switch (character) {
-                    case '+':
-                        operation = 'add';
-                        break;
-                    case '-':
-                        operation = 'sub';
-                        break;
-                    case '*':
-                        operation = 'mul';
-                        break;
-                    case '/':
-                        operation = 'div';
-                        break;
-                    default:
-                        if (operation === 'add')
-                            result += Number(character);
-                        else if (operation === 'sub')
-                            result -= Number(character);
-                        else if (operation === 'mul')
-                            result *= Number(character);
-                        else if (operation === 'div')
-                            result /= Number(character);
-                        else
-                            result = Number(character);
-                        operation = undefined;
-                        break;
-                }
-            }
+            let result = this.getResult(this.state.currentCalculation);
             let previousCalculations = this.state.previousCalculations;
             previousCalculations.push(currentCalculation);
             currentCalculation = undefined;
@@ -83,7 +51,7 @@ class Calculator extends React.Component {
             })
         }
         else {
-            let currentCalculation = this.state.currentCalculation;
+            let currentCalculation = this.state.currentCalculation ? this.state.currentCalculation : (this.state.result || '');
             currentCalculation += `${opa}`;
             this.setState({
                 currentCalculation: currentCalculation
@@ -92,9 +60,9 @@ class Calculator extends React.Component {
     }
 
     render() {
-        const previousCalculations = this.state.previousCalculations.map(previousCalculation => {
+        const previousCalculations = this.state.previousCalculations.map((previousCalculation, index) => {
             return (
-                <p>{previousCalculation}</p>
+                <p key={'previous' + index}>{previousCalculation}</p>
             )
         })
         return (
@@ -143,6 +111,46 @@ class Calculator extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    getResult(calculation) {
+        let calculationChars = [];
+        let operand;
+        for (let i = 0; i < calculation.length; i++) {
+            if (operand) {
+
+            }
+
+        };
+        console.log(calculationChars)
+        let index = calculationChars.findIndex(i => i === '*' || i === '/');
+        if (index > -1) {
+
+        }
+        else {
+            let result = 0;
+            let operation = undefined;
+            for (let character of calculationChars) {
+                switch (character) {
+                    case '+':
+                        operation = 'add';
+                        break;
+                    case '-':
+                        operation = 'sub';
+                        break;
+                    default:
+                        if (operation === 'add')
+                            result += Number(character);
+                        else if (operation === 'sub')
+                            result -= Number(character);
+                        else
+                            result = Number(character);
+                        operation = undefined;
+                        break;
+                }
+            }
+            return result;
+        }
     }
 }
 
