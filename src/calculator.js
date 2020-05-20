@@ -45,23 +45,41 @@ class Calculator extends React.Component {
             for (var i = 0; i < currentCalculation.length; i++) {
                 let character = currentCalculation[i];
                 console.log(character, operation, result);
-                if (character === '+' || character === '-' || character === '*' || character === '/') {
-                    if (character === '+') {
-                        operation = 'add'
-                    }
-                }
-                else {
-                    if (operation === 'add') {
-                        result += Number(character);
-                    }
-                    else
-                        result = Number(character);
-                    operation = undefined;
+                switch (character) {
+                    case '+':
+                        operation = 'add';
+                        break;
+                    case '-':
+                        operation = 'sub';
+                        break;
+                    case '*':
+                        operation = 'mul';
+                        break;
+                    case '/':
+                        operation = 'div';
+                        break;
+                    default:
+                        if (operation === 'add')
+                            result += Number(character);
+                        else if (operation === 'sub')
+                            result -= Number(character);
+                        else if (operation === 'mul')
+                            result *= Number(character);
+                        else if (operation === 'div')
+                            result /= Number(character);
+                        else
+                            result = Number(character);
+                        operation = undefined;
+                        break;
                 }
             }
+            let previousCalculations = this.state.previousCalculations;
+            previousCalculations.push(currentCalculation);
+            currentCalculation = undefined;
             this.setState({
                 result: result,
-                currentCalculation: currentCalculation
+                currentCalculation: currentCalculation,
+                previousCalculations: previousCalculations
             })
         }
         else {
@@ -74,11 +92,17 @@ class Calculator extends React.Component {
     }
 
     render() {
+        const previousCalculations = this.state.previousCalculations.map(previousCalculation => {
+            return (
+                <p>{previousCalculation}</p>
+            )
+        })
         return (
             <div>
                 <div className="container">
                     <div className="row">
-                        <div className="col-md">
+                        <div className="col-md margin-top_16">
+                            {previousCalculations}
                         </div>
                         <div className="col-md">
                             <div className="padding_16">
