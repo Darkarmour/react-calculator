@@ -8,32 +8,69 @@ class Calculator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            text: ''
+            result: undefined,
+            currentCalculation: undefined,
+            previousCalculations: []
         }
     }
 
-    renderOperand(i) {
-        return <Operand value={i} onClick={() => this.handleOperandOnClicked(i)} />
+    renderOperand(op) {
+        return <Operand value={op} onClick={() => this.handleOperandOnClicked(op)} />
     }
 
-    renderOperation(i) {
-        return <Operation value={i} onClick={() => this.handleOperationOnClicked(i)} />
+    renderOperation(opa) {
+        return <Operation value={opa} onClick={() => this.handleOperationOnClicked(opa)} />
     }
 
-    handleOperandOnClicked(i) {
-        let text = this.state.text;
-        text += i;
+    handleOperandOnClicked(op) {
+        let currentCalculation = this.state.currentCalculation || '';
+        currentCalculation += `${op}`;
         this.setState({
-            text: text
+            currentCalculation: currentCalculation
         });
     }
 
-    handleOperationOnClicked(i) {
-        let text = this.state.text;
-        text += i;
-        this.setState({
-            text: text
-        });
+    handleOperationOnClicked(opa) {
+        if (opa === 'C') {
+            this.setState({
+                result: undefined,
+                currentCalculation: undefined,
+                previousCalculations: []
+            });
+        }
+        else if (opa === '=') {
+            let currentCalculation = this.state.currentCalculation;
+            let result = 0;
+            let operation = undefined;
+            for (var i = 0; i < currentCalculation.length; i++) {
+                let character = currentCalculation[i];
+                console.log(character, operation, result);
+                if (character === '+' || character === '-' || character === '*' || character === '/') {
+                    if (character === '+') {
+                        operation = 'add'
+                    }
+                }
+                else {
+                    if (operation === 'add') {
+                        result += Number(character);
+                    }
+                    else
+                        result = Number(character);
+                    operation = undefined;
+                }
+            }
+            this.setState({
+                result: result,
+                currentCalculation: currentCalculation
+            })
+        }
+        else {
+            let currentCalculation = this.state.currentCalculation;
+            currentCalculation += `${opa}`;
+            this.setState({
+                currentCalculation: currentCalculation
+            })
+        }
     }
 
     render() {
@@ -72,10 +109,11 @@ class Calculator extends React.Component {
                         <div className="col-md margin-top_16">
                             <div className="input-group mb-3 margin-top_16">
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text" id="inputGroup-sizing-default">Calculate</span>
+                                    <span className="input-group-text" id="inputGroup-sizing-default">Result</span>
                                 </div>
-                                <input type="text" className="form-control" value={this.state.text} />
+                                <input type="number" className="form-control" value={this.state.result || ''} disabled />
                             </div>
+                            <p>{this.state.currentCalculation}</p>
                         </div>
                     </div>
                 </div>
