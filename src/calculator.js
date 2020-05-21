@@ -5,12 +5,21 @@ import { Operation } from './operation';
 
 class Calculator extends React.Component {
 
+    priorities = {
+        '+': 0,
+        '-': 0,
+        '*': 1,
+        '/': 1,
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             result: undefined,
-            currentCalculation: undefined,
-            previousCalculations: []
+            currentOperands: [],
+            currentOperations: [],
+            previousResults: [],
+            lastAdded: undefined
         }
     }
 
@@ -23,46 +32,53 @@ class Calculator extends React.Component {
     }
 
     handleOperandOnClicked(op) {
-        let currentCalculation = this.state.currentCalculation || '';
-        currentCalculation += `${op}`;
+        let lastAdded = this.state.lastAdded;
+        let currentOperands = this.state.currentOperands;
+        if (lastAdded === 'operand' && (currentOperands.length))
+            currentOperands[currentOperands.length - 1] = currentOperands[currentOperands.length - 1] + op;
+        else
+            currentOperands.push(op);
         this.setState({
-            currentCalculation: currentCalculation
-        });
+            lastAdded: 'operand',
+            currentOperands: currentOperands
+        })
     }
 
     handleOperationOnClicked(opa) {
         if (opa === 'C') {
             this.setState({
                 result: undefined,
-                currentCalculation: undefined,
-                previousCalculations: []
+                currentOperands: [],
+                currentOperations: [],
+                previousResults: [],
+                lastAdded: undefined
             });
         }
         else if (opa === '=') {
-            let currentCalculation = this.state.currentCalculation;
-            let result = this.getResult(this.state.currentCalculation);
-            let previousCalculations = this.state.previousCalculations;
-            previousCalculations.push(currentCalculation);
-            currentCalculation = undefined;
-            this.setState({
-                result: result,
-                currentCalculation: currentCalculation,
-                previousCalculations: previousCalculations
-            })
+            let result = this.getResult(this.state.currentOperands, this.state.currentOperations);
+            // let previousResults = this.state.previousResults;
+            // previousResults.push(currentCalculation);
+            // currentCalculation = undefined;
+            // this.setState({
+            //     result: result,
+            //     currentCalculation: currentCalculation,
+            //     previousResults: previousResults
+            // })
         }
         else {
-            let currentCalculation = this.state.currentCalculation ? this.state.currentCalculation : (this.state.result || '');
-            currentCalculation += `${opa}`;
+            let currentOperations = this.state.currentOperations;
+            currentOperations.push(opa);
             this.setState({
-                currentCalculation: currentCalculation
-            })
+                lastAdded: 'operation',
+                currentOperations: currentOperations
+            });
         }
     }
 
     render() {
-        const previousCalculations = this.state.previousCalculations.map((previousCalculation, index) => {
+        const previousResults = this.state.previousResults.map((previousResult, index) => {
             return (
-                <p key={'previous' + index}>{previousCalculation}</p>
+                <p key={'previous' + index}>{previousResult}</p>
             )
         })
         return (
@@ -70,7 +86,7 @@ class Calculator extends React.Component {
                 <div className="container">
                     <div className="row">
                         <div className="col-md margin-top_16">
-                            {previousCalculations}
+                            {previousResults}
                         </div>
                         <div className="col-md">
                             <div className="padding_16">
@@ -105,7 +121,7 @@ class Calculator extends React.Component {
                                 </div>
                                 <input type="number" className="form-control" value={this.state.result || ''} disabled />
                             </div>
-                            <p>{this.state.currentCalculation}</p>
+                            {/* <p>{this.state.currentCalculation}</p> */}
                         </div>
                     </div>
                 </div>
@@ -113,10 +129,11 @@ class Calculator extends React.Component {
         )
     }
 
-    getResult(calculation) {
+    getResult(operands, operations) {
+        let expression = this.getExpression(this.state.currentOperands, this.state.currentOperations);
         let calculationChars = [];
         let operand;
-        for (let i = 0; i < calculation.length; i++) {
+        for (let i = 0; i < expression.length; i++) {
             if (operand) {
 
             }
@@ -151,6 +168,15 @@ class Calculator extends React.Component {
             }
             return result;
         }
+    }
+
+    getExpression(operands, operations) {
+        console.log(operands, operations)
+        let expression = ''
+        for (let index = 0; index < operands.length; index++) {
+            expression += operations[index] ? (operands[index] + operations[index]) : operands[index];
+        }
+        return expression;
     }
 }
 
